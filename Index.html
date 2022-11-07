@@ -1,0 +1,101 @@
+<html>
+    <head>
+	<!—sisipkan kode pemuatan disini -->
+	<link rel="stylesheet" href="leaflet/leaflet.css"/>
+	<script src="leaflet/leaflet.js"></script>
+	
+	<!--menghubungkan html dengan plugin leafletminimap -->
+	<link rel="stylesheet" href="leaflet/Control.MiniMap.css"/> 
+	<script src="leaflet/Control.MiniMap.js"></script>
+	
+	<!--menghubungkan html dengan plugin leafletgropedlayercontrol -->
+	<link rel="stylesheet" href="leaflet/leaflet.groupedlayercontrol.css"/> 
+	<script src="leaflet/leaflet.groupedlayercontrol.js"></script>
+	
+	<!--menghubungkan html dengan plugin Lcontrolmouseposition -->
+	<link rel="stylesheet" href="leaflet/L.Control.MousePosition.css"/> 
+	<script src="leaflet/L.Control.MousePosition.js"></script>
+	
+	<!--menghubungkan html dengan plugin ruler -->
+	<link rel="stylesheet" href="leaflet/leaflet-ruler.css"/>
+	<script src="leaflet/leaflet-ruler.js"></script>
+
+    </head>
+   <body>
+<!-- peta akan ditampilkan disini -->
+         <div style="height:500px" id="mapid"></div>
+    </body>
+	
+	<script src="denpasar.js"></script>
+	
+	<script>
+   var mymap = L.map('mapid').setView([-8.671311,115.212284], 13);
+   var GoogleMaps = new L.TileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { 
+     opacity: 1.0, attribution: 'Ketrampilan Berkehidupan dan WEBSIG UMS'
+}).addTo(mymap);
+var GoogleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { 
+     maxZoom: 22, 
+     attribution: 'Ketrampilan Berkehidupan dan WEBSIG UMS' 
+});
+
+var baseLayers = {
+     'Google Satellite Hybrid': GoogleSatelliteHybrid,
+     'Google Maps': GoogleMaps,
+}; 
+// Mengaktifkan plugin groupedlayercontrol sehingga basemap bisa muncul
+L.control.groupedLayers(baseLayers).addTo(mymap);
+var polyg2 = L.geoJson(polygons.features).addTo(mymap);
+
+//Menambahkan titik penanda di peta kita
+var marker = L.marker([-8.671311,115.212284], 13).addTo(mymap);
+
+// Saat diklik muncul pop up informasi
+	marker.bindPopup("<b>Informasi</b><br>Rumah Restu – E100190276");
+
+//Menambahkan Scale Bar
+	L.control.scale( {position: 'topleft', maxWidth: 200, imperial: false } ).addTo(mymap);
+	
+//Menambahkan Mouse Position
+	 L.control.mousePosition( {position:"bottomright", numDigits:8, prefix:"koordinat"} ).addTo(mymap);
+	 
+	 //Menambahkan arah utara pada leaflet
+	var north = L.control({position: "bottomleft"});
+    north.onAdd = function(mymap) {
+    var div = L.DomUtil.create("div", "info legend");
+    div.innerHTML = '<img src="arahmataangin.png">';
+    return div;
+    }
+    north.addTo(mymap);
+	
+	//Menambahkan plugin leafletminimap (inset)
+	var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+	var osmAttrib='Map data &copy; OpenStreetMap contributors';
+	var osm = new L.TileLayer(osmUrl, {minZoom: 5, maxZoom: 18, attribution: osmAttrib});
+
+	mymap.addLayer(osm);
+	mymap.setView(new L.LatLng(-8.671311,115.212284),13);
+		
+	//Plugin magic goes here! Note that you cannot use the same layer object again, as that will confuse the two map controls
+	var osm2 = new L.TileLayer(osmUrl, {minZoom: 0, maxZoom: 13, attribution: osmAttrib });
+	var miniMap = new L.Control.MiniMap(osm2, { toggleDisplay: true }).addTo(mymap);
+	
+	//fungsi ruler
+	var options = {
+          position: 'topleft',
+		  circleMarker: {              
+		    color: 'red',
+            radius: 2
+			} , 
+          lengthUnit: {
+           display: 'km',              
+           decimal: 2,                 
+           factor: null,               
+           label: 'Distance:'
+          }
+        };
+    L.control.ruler(options).addTo(mymap);
+	
+	
+	</script>
+
+</html>
